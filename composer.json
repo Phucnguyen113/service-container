@@ -1,0 +1,19 @@
+{
+    "name": "phucrr/php",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Phucrr\\Php\\": "core/",
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "phucrr",
+            "email": "phucnguyen0113@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1"
+    }
+}

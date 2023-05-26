@@ -1,9 +1,12 @@
 <?php
+namespace Phucrr\Php;
+
+use Phucrr\Php\ContextualBindingBuilder;
 
 class Container {
     
     public $bindings = [];
-    protected $instances = [];
+    public $instances = [];
     protected static $instance;
     protected $buildStack = [];
     public $aliases = [];
@@ -17,19 +20,22 @@ class Container {
      */
     public function make($abstract)
     {
+
         $abstract = $this->getAlias($abstract);
         if (isset($this->instances[$abstract])) {
             return $this->instances[$abstract];
         }
         $concrete = $this->getConcrete($abstract);
-        if ($concrete instanceof Closure || $concrete === $abstract) {
+        if ($concrete instanceof \Closure || $concrete === $abstract) {
             $instance = $this->build($concrete);
         } else {
             $instance = $this->make($concrete);
         }
 
         if (isset($this->bindings[$abstract]) && $this->bindings[$abstract]['share']) {
-            $this->instances[$abstract] = $instance; 
+            
+            $this->instances[$abstract] = $instance;
+            // var_dump($instance, 999, $this->instances[$abstract] === $instance);
         }
         return $instance;
     }
@@ -63,7 +69,7 @@ class Container {
             $concrete = $abstract;
         }
 
-        if (!$concrete instanceof Closure) {
+        if (!$concrete instanceof \Closure) {
             $concrete = $this->getClosure($abstract, $concrete);
         }
 
@@ -95,11 +101,11 @@ class Container {
      */
     private function build($concrete)
     {
-        if ($concrete instanceof Closure) {
+        if ($concrete instanceof \Closure) {
             return $concrete($this);
         }
 
-        $instance = new ReflectionClass($concrete);
+        $instance = new \ReflectionClass($concrete);
         if (!$instance->isInstantiable()) {
             throw new \Exception('instance not instantiable');
         }
@@ -162,4 +168,5 @@ class Container {
         }
         return null;
     }
+
 }

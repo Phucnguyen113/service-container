@@ -1,4 +1,5 @@
 <?php
+namespace Phucrr\Php;
 
 class ContextualBindingBuilder
 {
