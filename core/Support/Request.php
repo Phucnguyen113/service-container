@@ -25,4 +25,18 @@ class Request implements RequestContract{
         }
         return $default;
     }
+
+    public function method()
+    {
+        return $this->method;
+    }
+
+    public function uri()
+    {
+        $uri = $_SERVER['REQUEST_URI'];
+
+        $uri = trim(explode('?', $uri)[0], '/'); // split query string
+
+        return $uri;
+    }
 }

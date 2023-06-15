@@ -3,6 +3,7 @@
 use App\Http\Kernel\Kernel as HttpKernel;
 use Phucrr\Php\kernel\Kernel;
 use Phucrr\Php\Contracts\RequestContract;
+use Phucrr\Php\Support\Facades\Route;
 use Phucrr\Php\Support\Request;
 
     require_once '../vendor/autoload.php';
@@ -11,8 +12,10 @@ use Phucrr\Php\Support\Request;
     $app->bind(RequestContract::class, Request::class);
     $kernel = $app->make(Kernel::class);
     $kernel->handle($app->make(RequestContract::class));
+ 
     echo '<pre>';
-    var_dump($app->instances['route']);
+    var_dump($app->instances['route']->routes->routes);
+
     // interface a {
 
     // }

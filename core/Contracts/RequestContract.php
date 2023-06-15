@@ -7,4 +7,7 @@ interface RequestContract {
 
     public function get($key, $default);
 
+    public function method();
+
+    public function uri();
 }

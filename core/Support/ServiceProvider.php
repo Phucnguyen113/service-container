@@ -11,6 +11,9 @@ abstract class ServiceProvider {
         $this->app = $app;
     }
 
-    public abstract function register(); 
+    public function register()
+    {
+
+    }
 
 }

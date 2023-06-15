@@ -10,7 +10,8 @@ abstract class Kernel {
     public $app;
     public $router;
     public $bootstraps = [
-        \Phucrr\Php\Bootstraps\RegisterFacade::class
+        \Phucrr\Php\Bootstraps\RegisterFacade::class,
+        \Phucrr\Php\Bootstraps\RegisterProviders::class,
     ];
 
     public function __construct(Application $app, Router $router)
@@ -32,6 +33,6 @@ abstract class Kernel {
 
     public function dispatchToRouter(RequestContract $request)
     {
-        $this->router->loadRoute();
+        $this->router->setRequest($request)->dispatch();
     }
 }

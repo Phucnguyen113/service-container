@@ -37,5 +37,10 @@ interface Router {
     /**
      * Load routes
      */
-    public function loadRoute();
+    public function loadRoutes($routes);
+
+    /**
+     * Set Request instance for router
+     */
+    public function setRequest(RequestContract $request);
 }

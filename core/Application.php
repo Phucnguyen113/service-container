@@ -3,7 +3,7 @@ namespace Phucrr\Php;
 
 use Phucrr\Php\Container;
 use Phucrr\Php\Contracts\Router as ContractsRouter;
-use Phucrr\Php\Providers\RouteServiceProvider;
+use Phucrr\Php\Providers\RoutingServiceProvider;
 use Phucrr\Php\Route\Router;
 
 class Application extends Container{
@@ -21,7 +21,7 @@ class Application extends Container{
 
     private function bindingBasicProvider()
     {
-        $this->register(RouteServiceProvider::class);
+        $this->register(RoutingServiceProvider::class);
     }
 
 
