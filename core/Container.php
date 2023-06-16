@@ -35,7 +35,6 @@ class Container {
         if (isset($this->bindings[$abstract]) && $this->bindings[$abstract]['share']) {
             
             $this->instances[$abstract] = $instance;
-            // var_dump($instance, 999, $this->instances[$abstract] === $instance);
         }
         return $instance;
     }

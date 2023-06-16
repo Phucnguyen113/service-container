@@ -7,14 +7,28 @@ use Phucrr\Php\Contracts\RequestContract;
 use Phucrr\Php\Contracts\Router as ContractsRouter;
 
 class Router implements ContractsRouter {
-    
-    protected static $prefix = '';
 
+    /**
+     * The route group attribute stack.
+     *
+     * @var array
+     */
     public $groupStack = [];
 
+    /**
+     * The route collection instance.
+     *
+     * @var RouteCollection
+     */
     public $routes;
 
+    /**
+     * The request currently being dispatched.
+     *
+     * @var \Phucrr\Php\Support\Request
+     */
     public $request;
+
     public $app;
 
     public function __construct(Application $app)
@@ -30,13 +44,22 @@ class Router implements ContractsRouter {
         return $this->routes->add($this->createRoute($method, $uri, $action));
     }
 
+    /**
+     * Create a new route instance.
+     *
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  mixed  $action
+     *
+     * @return Route
+     */
     protected function createRoute($method, $uri, $action)
     {   
         $uri = $this->prefix($uri);
         if ($this->actionReferencesController($action)) {
             $action = $this->convertToControllerAction($action);
         }
-        $route = new Route([$method], $uri, $action);
+        $route = (new Route([$method], $uri, $action))->setContainer($this->app);
         if (!empty($this->groupStack)) {
             $this->mergeLastGroupToRoute($route);
         }
@@ -127,6 +150,13 @@ class Router implements ContractsRouter {
         $this->addRoute('POST', $uri, $action);
     }
 
+    /**
+     * Create a route group with shared attributes.
+     *
+     * @param  array  $attributes
+     * @param  \Closure|string  $routes
+     * @return void
+     */
     public function group(array $attributes, $callback)
     {
         $this->updateGroupStack($attributes);
@@ -136,6 +166,12 @@ class Router implements ContractsRouter {
         array_pop($this->groupStack);
     }
 
+    /**
+     * Update the group stack with the given attributes.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
     public function updateGroupStack($attributes)
     {
         if (! empty($this->groupStack)) {
@@ -144,6 +180,12 @@ class Router implements ContractsRouter {
         $this->groupStack[] = $attributes;
     }
 
+    /**
+     * erge the given array with the last group stack.
+     * 
+     * @param  array  $new
+     * @return array
+     */
     protected function mergeWithLastGroup($new)
     {
         $lastGroup = end($this->groupStack);
@@ -182,16 +224,23 @@ class Router implements ContractsRouter {
      */
     protected function mergeNamespace($new, $old)
     {
-        $oldPrefix = $old['namespace'] ?? null;
+        $oldNamespace = $old['namespace'] ?? null;
 
         if (isset($new['namespace'])) {
             return isset($old['namespace']) && strpos($new['namespace'], '\\') !== 0
             ? trim($old['namespace'], '\\').'\\'.trim($new['namespace'], '\\')
             : trim($new['namespace'], '\\');
         }
-        return $oldPrefix;
+        return $oldNamespace;
     }
 
+    /**
+     * Load register routes from file|Closure
+     * 
+     * @param string|\Closure @callback
+     * 
+     * @return null
+     */
     public function loadRoutes($callback)
     {
         if ($callback instanceof \Closure) {
@@ -202,30 +251,56 @@ class Router implements ContractsRouter {
         }
     }
 
+    /**
+     * Set Request for Router
+     * 
+     * @param RequestContract $request
+     * 
+     * @return $this
+     */
     public function setRequest(RequestContract $request)
     {
         $this->request = $request;
         return $this;
     }
 
+    /**
+     * Dispatch request to router
+     * @return null
+     */
     public function dispatch()
     {
         $this->runRoute($this->findRoute());
     }
 
+    /**
+     * Run route, which matched with request
+     * 
+     * @param Route $route
+     * 
+     * @return null
+     */
     protected function runRoute($route)
     {
         if (!$route instanceof Route) {
-            throw new \Exception("not found exception", 1);
+            throw new \Exception("not found Route exception", 1);
         }
         $route->run();
     }
-
+    
+    /**
+     * Find a route matched with request uri
+     * 
+     * @return Route
+     */
     protected function findRoute()
     {
         return $this->routes->match($this->request);
     }
 
+    /**
+     * Call dynamic method in RouteRegister
+     */
     public function __call($method, $arguments)
     {
         return (new RouteRegister($this))->attribute($method, $arguments);

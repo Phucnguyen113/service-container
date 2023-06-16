@@ -13,8 +13,8 @@ use Phucrr\Php\Support\Request;
     $kernel = $app->make(Kernel::class);
     $kernel->handle($app->make(RequestContract::class));
  
-    echo '<pre>';
-    var_dump($app->instances['route']->routes->routes);
+    // echo '<pre>';
+    // var_dump($app->instances['route']->routes->routes);
 
     // interface a {
 
