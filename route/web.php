@@ -1,10 +1,11 @@
 <?php
 
 use Phucrr\Php\Support\Facades\Route;
-use Phucrr\Php\Support\Request;
 
 Route::get('products/{id}/edit/{a}', 'ProductController@index');
-
+Route::get('view', function () {
+    return view('test', ['a' => '<script>alert("aaaa")</script>', 'b' => 'number b', 'c' => '<span style="color:red">c~~~</span>']);
+});
 Route::group(['prefix' => 'group'], function () {
     Route::get('zxc', 'grouxyz@in');
     Route::post('store', 'asdq@iqwe');

@@ -29,6 +29,11 @@ class Router implements ContractsRouter {
      */
     public $request;
 
+    /**
+     * The Application instance
+     * 
+     * @var Application
+     */
     public $app;
 
     public function __construct(Application $app)
@@ -123,6 +128,13 @@ class Router implements ContractsRouter {
                 ? $group['namespace'].'\\'.$class : $class;
     }
 
+    /**
+     * Prepend the prefix to uri
+     * 
+     * @param string $uri
+     * 
+     * @return string
+     */
     protected function prefix($uri)
     {
         return trim($this->getLastGroupPrefix(), '/'). '/'. trim($uri, '/') ?: '/';
@@ -181,7 +193,7 @@ class Router implements ContractsRouter {
     }
 
     /**
-     * erge the given array with the last group stack.
+     * Merge the given array with the last group stack.
      * 
      * @param  array  $new
      * @return array
@@ -270,7 +282,7 @@ class Router implements ContractsRouter {
      */
     public function dispatch()
     {
-        $this->runRoute($this->findRoute());
+        return $this->runRoute($this->findRoute());
     }
 
     /**
@@ -278,14 +290,16 @@ class Router implements ContractsRouter {
      * 
      * @param Route $route
      * 
-     * @return null
+     * @throws \Exception
+     *
+     * @return mixed
      */
     protected function runRoute($route)
     {
         if (!$route instanceof Route) {
             throw new \Exception("not found Route exception", 1);
         }
-        $route->run();
+        return $route->run();
     }
     
     /**

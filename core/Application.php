@@ -2,40 +2,100 @@
 namespace Phucrr\Php;
 
 use Phucrr\Php\Container;
-use Phucrr\Php\Contracts\Router as ContractsRouter;
 use Phucrr\Php\Providers\RoutingServiceProvider;
-use Phucrr\Php\Route\Router;
+use Phucrr\Php\Providers\ViewServiceProvider;
+
 
 class Application extends Container{
+    use Path;
 
+    /**
+     * All of the registered service providers
+     */
     public $serviceProviders = [];
+
+    /**
+     * List names of loaded providers
+     * @var array
+     */
     public $loadedProviders = [];
 
-    public function __construct()
+    /**
+     * Base path of application
+     * @var string
+     */
+    public $basePath;
+    /**
+     * @param string $path
+     */
+    public function __construct($path)
     {
-        static::$instance = $this;
+        if ($path) {
+            $this->setBasePath($path);
+        }
         $this->bindingAliases();
         $this->bindingBasicProvider();
         $this->bindingBasic();
     }
 
+    /**
+     * Set the base path for application
+     * 
+     * @return null
+     */
+    public function setBasePath($path)
+    {
+        $this->basePath = rtrim($path, '\/');
+        $this->bindPathsToContainer();
+    }
+
+    /**
+     * Binding core path instances to container
+     * 
+     * @return null 
+     */
+    private function bindPathsToContainer()
+    {
+        $this->instance('path', $this->path());
+        $this->instance('path.config', $this->configPath());
+        $this->instance('path.public', $this->publicPath());
+        $this->instance('path.resource', $this->resourcePath());
+    }
+
+    /**
+     * Register core provider for the application
+     * 
+     * @return null
+     */
     private function bindingBasicProvider()
     {
         $this->register(RoutingServiceProvider::class);
+        $this->register(ViewServiceProvider::class);
     }
 
-
+    /**
+     * Singleton the Application instance to container
+     * 
+     * @return null
+     */
     private function bindingBasic()
     {
         $this->singleton(Application::class, function () {
             return $this;
         });
+        static::$instance = $this;
     }
 
+    /**
+     * Register the core aliases
+     * 
+     * @return null
+     */
     private function bindingAliases()
     {
         $aliases = [
-            'route' => [Router::class, ContractsRouter::class]
+            'route' => [\Phucrr\Php\Route\Router::class, \Phucrr\Php\Contracts\Router::class],
+            'view' => [\Phucrr\Php\Support\View::class]
         ];
         foreach ($aliases as $key => $alias) {
             foreach ($alias as $concrete) {
@@ -44,11 +104,23 @@ class Application extends Container{
         }
     }
 
-    public function getInstance()
+    /**
+     * Get the Application instance
+     * 
+     * @return self
+     */
+    public static function getInstance()
     {
         return static::$instance;
     }
 
+    /**
+     * Resolve and register the provider
+     *
+     * @param string|object $provider
+     *
+     * @return null
+     */
     public function register($provider)
     {
         if (is_string($provider)) {

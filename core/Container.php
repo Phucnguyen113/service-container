@@ -6,17 +6,23 @@ use Phucrr\Php\ContextualBindingBuilder;
 class Container {
     
     public $bindings = [];
-    public $instances = [];
+    protected $instances = [];
     protected static $instance;
     protected $buildStack = [];
     public $aliases = [];
     public $contextual = [];
+
+    public function instance($abstract, $instance)
+    {
+        $this->instances[$abstract] = $instance;
+        return $instance;
+    }
     /**
      * Resolve the given type from the container
      *
      * @param string $abstract
      *
-     * @return object
+     * @return mixed
      */
     public function make($abstract)
     {
@@ -130,6 +136,13 @@ class Container {
         return $instance->newInstanceArgs($dependencies);
     }
 
+    /**
+     * Get the alias of abstract
+     * 
+     * @param string $alias
+     * 
+     * @return string
+     */
     private function getAlias($alias) {
         if (!isset($this->aliases[$alias])) {
             return $alias;
@@ -137,6 +150,14 @@ class Container {
         return $this->getAlias($this->aliases[$alias]);
     }
 
+    /**
+     * Register a shared binding in the container.
+     * 
+     * @param  string  $abstract
+     * @param  \Closure|string|null  $concrete
+     * 
+     * @return void
+     */
     public function singleton($abstract, $concrete = null)
     {
         $this->bind($abstract, $concrete, true);

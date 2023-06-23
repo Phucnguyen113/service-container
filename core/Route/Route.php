@@ -125,7 +125,7 @@ class Route {
 
     /**
      * Dispatch request to specify controller
-     * @return null
+     * @return mixed
      */
     private function dispatchToController()
     {
@@ -133,7 +133,7 @@ class Route {
 
         $controller = $this->container->make(ltrim($controller, '\\'));
         
-        $controller->$method(...$this->resolveControllerMethodDependencies($controller, $method));
+        return $controller->$method(...$this->resolveControllerMethodDependencies($controller, $method));
     }
 
     /**
@@ -202,7 +202,7 @@ class Route {
 
     /**
      * Run closure action
-     * @return null
+     * @return mixed
      */
     private function runCallable()
     {

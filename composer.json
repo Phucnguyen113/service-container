@@ -2,6 +2,7 @@
     "name": "phucrr/php",
     "type": "project",
     "autoload": {
+        "files": ["core/helper.php"],
         "psr-4": {
             "Phucrr\\Php\\": "core/",
             "App\\": "app/"

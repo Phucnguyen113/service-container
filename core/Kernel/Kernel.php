@@ -19,20 +19,30 @@ abstract class Kernel {
         $this->app = $app;
         $this->router = $router;
     }
-
+    /**
+     * Bootstrap the application
+     * 
+     * @return null
+     */
     public function bootstrap()
     {
         $this->app->bootstrapWith($this->bootstraps);
     }
 
+    /**
+     * Handle the request
+     * 
+     * @param RequestContract $request
+     * 
+     */
     public function handle(RequestContract $request)
     {
         $this->bootstrap();
-        $this->dispatchToRouter($request);
+        return $this->dispatchToRouter($request);
     }
 
     public function dispatchToRouter(RequestContract $request)
     {
-        $this->router->setRequest($request)->dispatch();
+        return $this->router->setRequest($request)->dispatch();
     }
 }
